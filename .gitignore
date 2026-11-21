@@ -1,0 +1,29 @@
+# Backups e arquivos físicos do SQL Server
+*.bak
+*.trn
+*.mdf
+*.ndf
+*.ldf
+*.abf
+*.bacpac
+*.dacpac
+backup/
+backups/
+
+# Configurações locais e credenciais
+.vs/
+*.suo
+*.user
+.env
+.env.*
+*.pfx
+*.pem
+*.key
+
+# Saídas locais do SSMS e arquivos temporários
+*.rpt
+*.csv
+*.tmp
+*.log
+Thumbs.db
+Desktop.ini
