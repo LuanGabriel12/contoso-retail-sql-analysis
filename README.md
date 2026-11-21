@@ -4,6 +4,32 @@ Em 2008, qual canal de varejo gerou mais receita? E qual loja, considerada indiv
 
 Este projeto reúne dez consultas em T-SQL que escrevi durante uma prática de análise comercial no SQL Server Management Studio (SSMS), com o apoio de um tutor de IA. O objetivo foi partir de perguntas de varejo e escolher, para cada uma, a tabela, o período e o agrupamento adequados.
 
+## Visualização dos Resultados
+
+### Faturamento e receita por unidade em cada canal
+
+Qual tipo de loja faturou mais em 2008? E qual obteve mais receita por unidade vendida?
+
+![Grade do SSMS com faturamento, unidades vendidas, lojas distintas e receita por unidade para Store, Online, Reseller e Catalog em 2008.](screenshots/01_desempenho_canais.png)
+
+**Store** liderou em faturamento, com **USD 2,23 bilhões** distribuídos por **294 lojas**. Ao dividir a receita pelas unidades vendidas, **Catalog** ficou à frente, com **USD 258,69 por unidade**. [Ver a consulta de desempenho dos canais](sql/05_desempenho_canais.sql).
+
+### Variedade de produtos por classe
+
+Entre os produtos com preço de catálogo de 100 a 500, qual classe oferece o maior sortimento?
+
+![Grade do SSMS com quantidade de produtos, marcas distintas e preço médio das classes Regular, Economy e Deluxe.](screenshots/02_faixa_precos.png)
+
+A classe **Regular** reuniu **766 produtos de 10 marcas**. Nessa faixa, seu sortimento foi maior que o de **Economy** (326 produtos) e **Deluxe** (134) somadas. [Ver a consulta por faixa de preço](sql/07_analise_faixa_precos.sql).
+
+### Produtos que superaram o faturamento médio
+
+Depois de somar as vendas de cada produto em 2008, quais deles ultrapassaram a média desses totais?
+
+![Primeiras linhas da grade do SSMS com o código de cada produto e seu faturamento, em ordem decrescente.](screenshots/03_produtos_acima_media.png)
+
+Dos **2.244 produtos** com registros no ano, **724** superaram a média de **USD 1.832.100,51**. A captura mostra os dez primeiros. O produto de código **1963** liderou com **USD 19,64 milhões**. [Ver a consulta com a subconsulta de média](sql/10_produtos_acima_media.sql).
+
 ## Perguntas de negócio
 
 A evolução mensal ajuda a localizar mudanças no volume vendido. O ranking de produtos mostra quais itens mais contribuem para o faturamento. Para investigar devoluções, a medida é outra: a quantidade de unidades devolvidas. Cada consulta abaixo pode ser executada separadamente.
@@ -63,6 +89,10 @@ As consultas esperam o esquema `dbo` da edição relacional, com `DateKey` do ti
 contoso-retail-sql-analysis/
 ├── README.md
 ├── .gitignore
+├── screenshots/
+│   ├── 01_desempenho_canais.png
+│   ├── 02_faixa_precos.png
+│   └── 03_produtos_acima_media.png
 └── sql/
     ├── 01_analise_anual.sql
     ├── 02_vendas_mensais.sql
