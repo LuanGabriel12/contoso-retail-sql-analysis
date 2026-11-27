@@ -20,10 +20,16 @@ backups/
 *.pem
 *.key
 
-# Saídas locais do SSMS e arquivos temporários
+# Cache local e artefatos pesados do Power BI Desktop
+**/.pbi/
+*.pbix
+*.pbit
+
+# Saídas locais do SSMS, pacotes de revisão e arquivos temporários
 *.rpt
 *.csv
 *.tmp
 *.log
+*.zip
 Thumbs.db
 Desktop.ini
