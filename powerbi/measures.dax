@@ -1,0 +1,72 @@
+/*
+================================================================================
+ARQUIVO: powerbi/measures.dax
+PROJETO: Contoso Business Intelligence V2 (ContosoRetailDW)
+MODELO:  Estrela (FactSales + DimProduct + DimStore + DimDate + DimChannel)
+================================================================================
+
+DIRETRIZ TÉCNICA:
+- Todas as medidas utilizam exclusivamente recursos DAX dominados no escopo
+  do projeto: SUM, subtração entre medidas e DIVIDE (com proteção nativa contra
+  divisão por zero).
+- A Margem Comercial é calculada sempre como razão de agregações:
+      DIVIDE([Lucro Comercial], [Vendas Totais])
+  Nunca como média simples de margens individuais (que distorceria o resultado
+  global em -3,47 pontos percentuais na FactSales).
+- Todas as medidas respeitam automaticamente a propagação de filtros 1:N
+  unidirecional das dimensões (DimDate, DimProduct, DimStore e DimChannel)
+  para a tabela fato FactSales.
+
+================================================================================
+01. INDICADORES PRINCIPAIS (KPIs OBRIGATÓRIOS)
+================================================================================
+*/
+
+// Faturamento bruto líquido de descontos (coluna FactSales[SalesAmount], em USD)
+// Formato sugerido: "US$" #,0.00
+Vendas Totais =
+SUM(FactSales[SalesAmount])
+
+// Custo comercial registrado das vendas (coluna FactSales[TotalCost], em USD)
+// Formato sugerido: "US$" #,0.00
+Custo Total =
+SUM(FactSales[TotalCost])
+
+// Volume total de unidades comercializadas (coluna FactSales[SalesQuantity])
+// Formato sugerido: #,0
+Unidades Vendidas =
+SUM(FactSales[SalesQuantity])
+
+// Lucro comercial bruto (diferença entre faturamento total e custo total, em USD)
+// Não inclui estornos financeiros de devolução, impostos ou despesas operacionais.
+// Formato sugerido: "US$" #,0.00
+Lucro Comercial =
+[Vendas Totais] - [Custo Total]
+
+// Margem comercial ponderada (Lucro Comercial Total / Vendas Totais)
+// DIVIDE retorna BLANK automaticamente caso [Vendas Totais] seja 0.
+// Formato sugerido: 0.00%
+Margem Comercial =
+DIVIDE([Lucro Comercial], [Vendas Totais])
+
+
+/*
+================================================================================
+02. INDICADORES UNITÁRIOS DE APOIO (MESMO NÍVEL DAX: APENAS SUM E DIVIDE)
+================================================================================
+*/
+
+// Receita média obtida por unidade vendida (explica a dinâmica volume x preço)
+// Formato sugerido: "US$" #,0.00
+Receita por Unidade =
+DIVIDE([Vendas Totais], [Unidades Vendidas])
+
+// Custo médio por unidade vendida
+// Formato sugerido: "US$" #,0.00
+Custo por Unidade =
+DIVIDE([Custo Total], [Unidades Vendidas])
+
+// Lucro comercial médio por unidade vendida
+// Formato sugerido: "US$" #,0.00
+Lucro por Unidade =
+DIVIDE([Lucro Comercial], [Unidades Vendidas])

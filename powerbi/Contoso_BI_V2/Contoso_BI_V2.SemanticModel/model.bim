@@ -1,0 +1,477 @@
+{
+  "compatibilityLevel": 1567,
+  "model": {
+    "culture": "pt-BR",
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "sourceQueryCulture": "pt-BR",
+    "dataAccessOptions": {
+      "legacyRedirects": true,
+      "returnErrorValuesAsNull": true
+    },
+    "annotations": [
+      {
+        "name": "PBI_QueryOrder",
+        "value": "[\"FactSales\",\"DimProduct\",\"DimStore\",\"DimDate\",\"DimChannel\"]"
+      },
+      {
+        "name": "__PBI_TimeIntelligenceEnabled",
+        "value": "0"
+      }
+    ],
+    "tables": [
+      {
+        "name": "FactSales",
+        "columns": [
+          {
+            "name": "SalesKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "SalesKey",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "DateKey",
+            "dataType": "dateTime",
+            "isHidden": true,
+            "formatString": "Short Date",
+            "sourceColumn": "DateKey",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ChannelKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ChannelKey",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "StoreKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "StoreKey",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ProductKey",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ProductKey",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "SalesQuantity",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "SalesQuantity",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "TotalCost",
+            "dataType": "decimal",
+            "isHidden": true,
+            "formatString": "\"US$\" #,0.00",
+            "sourceColumn": "TotalCost",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "SalesAmount",
+            "dataType": "decimal",
+            "isHidden": true,
+            "formatString": "\"US$\" #,0.00",
+            "sourceColumn": "SalesAmount",
+            "summarizeBy": "sum"
+          }
+        ],
+        "measures": [
+          {
+            "name": "Vendas Totais",
+            "expression": "SUM(FactSales[SalesAmount])",
+            "formatString": "\"US$\" #,0.00",
+            "displayFolder": "01. KPIs Principais"
+          },
+          {
+            "name": "Custo Total",
+            "expression": "SUM(FactSales[TotalCost])",
+            "formatString": "\"US$\" #,0.00",
+            "displayFolder": "01. KPIs Principais"
+          },
+          {
+            "name": "Unidades Vendidas",
+            "expression": "SUM(FactSales[SalesQuantity])",
+            "formatString": "#,0",
+            "displayFolder": "01. KPIs Principais"
+          },
+          {
+            "name": "Lucro Comercial",
+            "expression": "[Vendas Totais] - [Custo Total]",
+            "formatString": "\"US$\" #,0.00",
+            "displayFolder": "01. KPIs Principais"
+          },
+          {
+            "name": "Margem Comercial",
+            "expression": "DIVIDE([Lucro Comercial], [Vendas Totais])",
+            "formatString": "0.00%",
+            "displayFolder": "01. KPIs Principais"
+          },
+          {
+            "name": "Receita por Unidade",
+            "expression": "DIVIDE([Vendas Totais], [Unidades Vendidas])",
+            "formatString": "\"US$\" #,0.00",
+            "displayFolder": "02. Indicadores Unitários"
+          },
+          {
+            "name": "Custo por Unidade",
+            "expression": "DIVIDE([Custo Total], [Unidades Vendidas])",
+            "formatString": "\"US$\" #,0.00",
+            "displayFolder": "02. Indicadores Unitários"
+          },
+          {
+            "name": "Lucro por Unidade",
+            "expression": "DIVIDE([Lucro Comercial], [Unidades Vendidas])",
+            "formatString": "\"US$\" #,0.00",
+            "displayFolder": "02. Indicadores Unitários"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "FactSales",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Fonte = Sql.Database(\"localhost\", \"ContosoRetailDW\"),",
+                "    dbo_FactSales = Fonte{[Schema=\"dbo\",Item=\"FactSales\"]}[Data],",
+                "    ColunasSelecionadas = Table.SelectColumns(dbo_FactSales,{\"SalesKey\", \"DateKey\", \"channelKey\", \"StoreKey\", \"ProductKey\", \"SalesQuantity\", \"TotalCost\", \"SalesAmount\"}),",
+                "    ColunasRenomeadas = Table.RenameColumns(ColunasSelecionadas,{{\"channelKey\", \"ChannelKey\"}}),",
+                "    TiposAlterados = Table.TransformColumnTypes(ColunasRenomeadas,{{\"SalesKey\", Int64.Type}, {\"DateKey\", type date}, {\"ChannelKey\", Int64.Type}, {\"StoreKey\", Int64.Type}, {\"ProductKey\", Int64.Type}, {\"SalesQuantity\", Int64.Type}, {\"TotalCost\", Currency.Type}, {\"SalesAmount\", Currency.Type}})",
+                "in",
+                "    TiposAlterados"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "DimProduct",
+        "columns": [
+          {
+            "name": "ProductKey",
+            "dataType": "int64",
+            "isKey": true,
+            "sourceColumn": "ProductKey",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ProductName",
+            "dataType": "string",
+            "sourceColumn": "ProductName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "BrandName",
+            "dataType": "string",
+            "sourceColumn": "BrandName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ClassName",
+            "dataType": "string",
+            "sourceColumn": "ClassName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ProductSubcategoryName",
+            "dataType": "string",
+            "sourceColumn": "ProductSubcategoryName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ProductCategoryName",
+            "dataType": "string",
+            "sourceColumn": "ProductCategoryName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "UnitCost",
+            "dataType": "decimal",
+            "formatString": "\"US$\" #,0.00",
+            "sourceColumn": "UnitCost",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "UnitPrice",
+            "dataType": "decimal",
+            "formatString": "\"US$\" #,0.00",
+            "sourceColumn": "UnitPrice",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "DimProduct",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Fonte = Sql.Database(\"localhost\", \"ContosoRetailDW\"),",
+                "    dbo_DimProduct = Fonte{[Schema=\"dbo\",Item=\"DimProduct\"]}[Data],",
+                "    dbo_DimSub = Fonte{[Schema=\"dbo\",Item=\"DimProductSubcategory\"]}[Data],",
+                "    dbo_DimCat = Fonte{[Schema=\"dbo\",Item=\"DimProductCategory\"]}[Data],",
+                "    ProdColunas = Table.SelectColumns(dbo_DimProduct,{\"ProductKey\", \"ProductName\", \"BrandName\", \"ClassName\", \"ProductSubcategoryKey\", \"UnitCost\", \"UnitPrice\"}),",
+                "    SubColunas = Table.SelectColumns(dbo_DimSub,{\"ProductSubcategoryKey\", \"ProductSubcategoryName\", \"ProductCategoryKey\"}),",
+                "    CatColunas = Table.SelectColumns(dbo_DimCat,{\"ProductCategoryKey\", \"ProductCategoryName\"}),",
+                "    MesclaSub = Table.NestedJoin(ProdColunas, {\"ProductSubcategoryKey\"}, SubColunas, {\"ProductSubcategoryKey\"}, \"Sub\", JoinKind.LeftOuter),",
+                "    ExpandeSub = Table.ExpandTableColumn(MesclaSub, \"Sub\", {\"ProductSubcategoryName\", \"ProductCategoryKey\"}, {\"ProductSubcategoryName\", \"ProductCategoryKey\"}),",
+                "    MesclaCat = Table.NestedJoin(ExpandeSub, {\"ProductCategoryKey\"}, CatColunas, {\"ProductCategoryKey\"}, \"Cat\", JoinKind.LeftOuter),",
+                "    ExpandeCat = Table.ExpandTableColumn(MesclaCat, \"Cat\", {\"ProductCategoryName\"}, {\"ProductCategoryName\"}),",
+                "    RemoveChavesAux = Table.RemoveColumns(ExpandeCat,{\"ProductSubcategoryKey\", \"ProductCategoryKey\"}),",
+                "    TextoLimpo = Table.TransformColumns(RemoveChavesAux,{{\"ProductName\", Text.Trim, type text}, {\"BrandName\", Text.Trim, type text}, {\"ClassName\", Text.Trim, type text}, {\"ProductSubcategoryName\", Text.Trim, type text}, {\"ProductCategoryName\", Text.Trim, type text}}),",
+                "    TiposAlterados = Table.TransformColumnTypes(TextoLimpo,{{\"ProductKey\", Int64.Type}, {\"UnitCost\", Currency.Type}, {\"UnitPrice\", Currency.Type}})",
+                "in",
+                "    TiposAlterados"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "DimStore",
+        "columns": [
+          {
+            "name": "StoreKey",
+            "dataType": "int64",
+            "isKey": true,
+            "sourceColumn": "StoreKey",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "StoreName",
+            "dataType": "string",
+            "sourceColumn": "StoreName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "StoreType",
+            "dataType": "string",
+            "sourceColumn": "StoreType",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Status",
+            "dataType": "string",
+            "sourceColumn": "Status",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "OpenDate",
+            "dataType": "dateTime",
+            "formatString": "Short Date",
+            "sourceColumn": "OpenDate",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "CloseDate",
+            "dataType": "dateTime",
+            "formatString": "Short Date",
+            "sourceColumn": "CloseDate",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "EmployeeCount",
+            "dataType": "int64",
+            "sourceColumn": "EmployeeCount",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "DimStore",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Fonte = Sql.Database(\"localhost\", \"ContosoRetailDW\"),",
+                "    dbo_DimStore = Fonte{[Schema=\"dbo\",Item=\"DimStore\"]}[Data],",
+                "    ColunasSelecionadas = Table.SelectColumns(dbo_DimStore,{\"StoreKey\", \"StoreName\", \"StoreType\", \"Status\", \"OpenDate\", \"CloseDate\", \"EmployeeCount\"}),",
+                "    TextoLimpo = Table.TransformColumns(ColunasSelecionadas,{{\"StoreName\", Text.Trim, type text}, {\"StoreType\", Text.Trim, type text}, {\"Status\", Text.Trim, type text}}),",
+                "    TiposAlterados = Table.TransformColumnTypes(TextoLimpo,{{\"StoreKey\", Int64.Type}, {\"OpenDate\", type date}, {\"CloseDate\", type date}, {\"EmployeeCount\", Int64.Type}})",
+                "in",
+                "    TiposAlterados"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "DimDate",
+        "dataCategory": "Time",
+        "columns": [
+          {
+            "name": "DateKey",
+            "dataType": "dateTime",
+            "isKey": true,
+            "formatString": "Short Date",
+            "sourceColumn": "DateKey",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "CalendarYear",
+            "dataType": "int64",
+            "sourceColumn": "CalendarYear",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "CalendarQuarterLabel",
+            "dataType": "string",
+            "sourceColumn": "CalendarQuarterLabel",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "NumeroMes",
+            "dataType": "int64",
+            "sourceColumn": "NumeroMes",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "CalendarMonthLabel",
+            "dataType": "string",
+            "sourceColumn": "CalendarMonthLabel",
+            "sortByColumn": "NumeroMes",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "MesAbrev",
+            "dataType": "string",
+            "sourceColumn": "MesAbrev",
+            "sortByColumn": "NumeroMes",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "AnoMesNumero",
+            "dataType": "int64",
+            "sourceColumn": "AnoMesNumero",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "AnoMes",
+            "dataType": "string",
+            "sourceColumn": "AnoMes",
+            "sortByColumn": "AnoMesNumero",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "InicioMes",
+            "dataType": "dateTime",
+            "formatString": "yyyy-MM",
+            "sourceColumn": "InicioMes",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "DimDate",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Fonte = Sql.Database(\"localhost\", \"ContosoRetailDW\"),",
+                "    dbo_DimDate = Fonte{[Schema=\"dbo\",Item=\"DimDate\"]}[Data],",
+                "    ColunasSelecionadas = Table.SelectColumns(dbo_DimDate,{\"Datekey\", \"CalendarYear\", \"CalendarQuarterLabel\", \"CalendarMonth\", \"CalendarMonthLabel\"}),",
+                "    ColunasRenomeadas = Table.RenameColumns(ColunasSelecionadas,{{\"Datekey\", \"DateKey\"}, {\"CalendarMonth\", \"AnoMesNumero\"}}),",
+                "    TiposIniciais = Table.TransformColumnTypes(ColunasRenomeadas,{{\"DateKey\", type date}, {\"CalendarYear\", Int64.Type}, {\"AnoMesNumero\", Int64.Type}}),",
+                "    PeriodoFactSales = Table.SelectRows(TiposIniciais, each [CalendarYear] >= 2007 and [CalendarYear] <= 2009),",
+                "    AddNumeroMes = Table.AddColumn(PeriodoFactSales, \"NumeroMes\", each Date.Month([DateKey]), Int64.Type),",
+                "    AddMesAbrev = Table.AddColumn(AddNumeroMes, \"MesAbrev\", each Date.ToText([DateKey], \"MMM\", \"pt-BR\"), type text),",
+                "    AddAnoMes = Table.AddColumn(AddMesAbrev, \"AnoMes\", each Date.ToText([DateKey], \"yyyy-MM\"), type text),",
+                "    AddInicioMes = Table.AddColumn(AddAnoMes, \"InicioMes\", each Date.StartOfMonth([DateKey]), type date)",
+                "in",
+                "    AddInicioMes"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "DimChannel",
+        "columns": [
+          {
+            "name": "ChannelKey",
+            "dataType": "int64",
+            "isKey": true,
+            "sourceColumn": "ChannelKey",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ChannelName",
+            "dataType": "string",
+            "sourceColumn": "ChannelName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ChannelDescription",
+            "dataType": "string",
+            "sourceColumn": "ChannelDescription",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "DimChannel",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Fonte = Sql.Database(\"localhost\", \"ContosoRetailDW\"),",
+                "    dbo_DimChannel = Fonte{[Schema=\"dbo\",Item=\"DimChannel\"]}[Data],",
+                "    ColunasSelecionadas = Table.SelectColumns(dbo_DimChannel,{\"ChannelKey\", \"ChannelName\", \"ChannelDescription\"}),",
+                "    TextoLimpo = Table.TransformColumns(ColunasSelecionadas,{{\"ChannelName\", Text.Trim, type text}, {\"ChannelDescription\", Text.Trim, type text}}),",
+                "    TiposAlterados = Table.TransformColumnTypes(TextoLimpo,{{\"ChannelKey\", Int64.Type}})",
+                "in",
+                "    TiposAlterados"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "FactSales_DimDate",
+        "fromTable": "FactSales",
+        "fromColumn": "DateKey",
+        "toTable": "DimDate",
+        "toColumn": "DateKey",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "FactSales_DimProduct",
+        "fromTable": "FactSales",
+        "fromColumn": "ProductKey",
+        "toTable": "DimProduct",
+        "toColumn": "ProductKey",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "FactSales_DimStore",
+        "fromTable": "FactSales",
+        "fromColumn": "StoreKey",
+        "toTable": "DimStore",
+        "toColumn": "StoreKey",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "FactSales_DimChannel",
+        "fromTable": "FactSales",
+        "fromColumn": "ChannelKey",
+        "toTable": "DimChannel",
+        "toColumn": "ChannelKey",
+        "crossFilteringBehavior": "oneDirection"
+      }
+    ]
+  }
+}
